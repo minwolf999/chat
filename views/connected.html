@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Forum Perso</title>
+        <link rel="stylesheet" href="/views/css/style.css">
+    </head>
+
+    <body onload="readMessageScroll('instant')">
+        <div class="NavBar">
+            <h3 class="title">Main Menu</h3>
+            <a href="/profile" class="profile">{{.User.Username}}</a>
+        </div><br>
+
+        <form action="/connected" method="post" class="destinataireForm">
+            {{if eq .Destinataire.Username "There is no account using this email address"}}
+                <p class="error">There is no account using this email address</p>
+            {{end}}
+
+            <div class="destinataireFromContent">
+                <h3>Email adress of your receiver:</h3>
+                <input type="text" name="destinataire">
+                {{if and (ne .Destinataire.Username "There is no account using this email address") .Destinataire.Username}}
+                    <h3 style="margin-left: auto; margin-right: 5px;">{{.Destinataire.Username}}</h3>
+                {{end}}
+            </div>
+        </form>
+        <br>
+
+        {{if and (ne .Destinataire.Username "There is no account using this email address") .Destinataire.Username}}
+            <div class="messageZone" id="readMessage">
+                {{range .Messages}}
+                    <br>
+                    <div class="message">
+                        <p class="date">{{.Sender}} - {{.Date}}</p>
+                        <p class="messageContent">{{.Message}}</p>
+                    </div>
+                    
+                {{end}}
+            </div>
+
+            <!-- <form action="/connected" method="post"> -->
+                <div class="writeMessageZone">
+                    <input class="writeMessage" id="message" type="text" name="message">
+                    <input type="submit" class="sendMessage" id="sendMessage" value="Submit">
+                </div>
+            <!-- </form> -->
+        {{end}}
+
+    </body>
+</html>
+
+<script>
+    var socket = new WebSocket("ws://localhost:8080/connected")
+
+    window.addEventListener("unload", function(event) {
+        socket.close();
+        navigator.sendBeacon('/bye');
+    })
+
+    tmpMessage = document.getElementById('message')
+    if (tmpMessage != null) {
+        tmpMessage.addEventListener('keydown', function(event) {
+            if (event.key == "Enter") {
+                event.preventDefault(); // Empêcher le rechargement de la page
+
+                var messageInput = document.getElementById('message');
+                var message = messageInput.value;
+
+                if (message.trim() !== '') {
+                    socket.send(message); // Envoyer le message via WebSocket
+                    messageInput.value = ''; // Effacer le champ de saisie après l'envoi
+                }
+            }
+        });
+    }
+    
+    tmpSendMessage = document.getElementById('sendMessage')
+    if (tmpSendMessage != null) {
+        tmpSendMessage.addEventListener('click', function(event) {
+            event.preventDefault(); // Empêcher le rechargement de la page
+
+            var messageInput = document.getElementById('message');
+            var message = messageInput.value;
+
+            if (message.trim() !== '') {
+                socket.send(message); // Envoyer le message via WebSocket
+                messageInput.value = ''; // Effacer le champ de saisie après l'envoi
+            }
+        });
+    }
+
+
+    socket.onopen = function(event) {
+        console.log("WebSocket connection established.");
+    };
+
+    socket.onmessage = function(event) {
+        var updatedData = JSON.parse(event.data);
+        var currentData = updatedData[updatedData.length -1]
+
+        newMessageDiv = document.getElementById("newMessage")
+        readMessage = document.getElementById("readMessage")
+
+        if (newMessageDiv == null) {
+            newMessageDiv2 = document.createElement("div")
+
+            newMessageDiv2.className = "newMessage"
+            newMessageDiv2.id = "newMessage"
+
+            newMessageP = document.createElement("p")
+            newMessageP.innerHTML = "New Message"
+
+            newMessageDiv2.appendChild(newMessageP)
+            readMessage.appendChild(newMessageDiv2)
+        }
+    
+        newDiv = document.createElement("div");
+        newDiv.className = "message";
+
+        detail = document.createElement("p");
+        detail.className = "date";
+        detail.innerHTML = currentData.Sender + " - " + currentData.Date;
+
+        message = document.createElement("p");
+        message.className = "messageContent";
+        message.innerHTML = currentData.Message;
+
+        newDiv.appendChild(detail)
+        newDiv.appendChild(message)
+
+        readMessage.appendChild(newDiv);
+
+        readMessageScroll('smooth');
+    }
+
+    function readMessageScroll(s) {
+        readMessage = document.getElementById("readMessage")
+
+        if (readMessage != null) {
+            readMessage.scroll({
+                top: readMessage.scrollHeight,
+                left: 0,
+                behavior: s
+            })
+        }
+    }
+</script>

@@ -1,0 +1,27 @@
+body {
+    background-color: #8491A3;
+}
+
+div {
+    border-radius: 100px;
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.25) inset;
+
+    align-items: center;
+    
+    text-decoration: none;
+    color: #292E1E;
+    background-color: #a38484;
+}
+
+.return {
+    text-decoration: none;
+    color: #292E1E;
+
+    display: flex;
+    margin-left: 95%;
+    margin-right: 0;
+}
+
+.user_info {
+    padding: 1%;
+}

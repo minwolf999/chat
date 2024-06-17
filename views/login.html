@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Forum Perso</title>
+        <link rel="stylesheet" href="/views/css/log.css">
+    </head>
+    <body>
+        <form action="/login" method="post" class="formRegister">
+            <div class="container">
+                <h1>Log In</h1>
+                <a href="/register" class="logLink">Register</a>
+            </div>
+
+            <p class="alert">{{.}}</p>
+
+            <laber for="email">Email:</label>
+            <input type="email" name="email" id="email" required>
+            <br><br>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+            <br><br>
+
+            <input id="submit" type="submit" value="Valider">
+        </form>
+    </body>
+</html>

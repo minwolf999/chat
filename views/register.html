@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Forum Perso</title>
+        <link rel="stylesheet" href="/views/css/log.css">
+    </head>
+    <body>
+        <form action="/register" method="post" class="formRegister">
+          <div class="container">
+            <h1>Register</h1>
+            <a href="/login" class="logLink">Log In</a>
+          </div>
+
+            <p class="alert">{{.}}</p>
+
+            <laber for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+            <br><br>
+
+            <laber for="email">Email:</label>
+            <input type="email" name="email" id="email" required>
+            <br><br>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+            <br><br>
+
+            <label for="confirm">Confirm Password:</label>
+            <input type="password" name="confirm" id="confirm" required onselectstart="return false" onpaste="return false;" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off/>
+            <br><br>
+
+            <input id="submit" type="submit" value="Valider" disabled>
+        </form>
+    </body>
+</html>
+
+<script>
+    var password = document.getElementById("password")
+    var confirm_password = document.getElementById("confirm");
+    var email = document.getElementById("email");
+
+  function validatePassword(){
+    if(password.value != confirm_password.value) {
+      document.getElementById("submit").disabled = true
+    } else {
+      document.getElementById("submit").disabled = false
+    }
+  }
+
+  password.onchange = validatePassword;
+  confirm_password.onkeyup = validatePassword;
+</script>
